@@ -8,10 +8,15 @@ Ce projet vise à créer une médiathèque audio/vidéo partagée avec un protoc
 
 ### Maquettes
 Les maquettes suivantes ont été réalisées avec l'outil Figma
+## La liste des maquettes
 ![alt text](maquettes/Liste-mediatheques.png)
+## La liste des médias disponibles
 ![alt text](maquettes/Liste-medias.png)
+## Ajouter un média à une médiathèque
 ![alt text](maquettes/Ajouter-media.png)
+## Confirmer la suppresion d'un élément
 ![alt text](maquettes/Confirm-suppression.png)
+## Modifier la description d'un média
 ![alt text](maquettes/Modif-media.png)
 ### User stories
 User story 1
