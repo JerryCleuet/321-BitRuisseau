@@ -30,7 +30,7 @@
         {
             mediaPageTitle = new Label();
             GoToMediatequesPage = new Button();
-            mediaList = new Label();
+            IntroText = new Label();
             SuspendLayout();
             // 
             // mediaPageTitle
@@ -54,22 +54,22 @@
             GoToMediatequesPage.UseVisualStyleBackColor = true;
             GoToMediatequesPage.Click += GoToMediatequesPage_Click;
             // 
-            // mediaList
+            // IntroText
             // 
-            mediaList.AutoSize = true;
-            mediaList.Location = new Point(35, 100);
-            mediaList.Name = "mediaList";
-            mediaList.Size = new Size(38, 15);
-            mediaList.TabIndex = 3;
-            mediaList.Text = "label1";
-            mediaList.Click += mediaList_Click;
+            IntroText.AutoSize = true;
+            IntroText.Location = new Point(35, 100);
+            IntroText.Name = "IntroText";
+            IntroText.Size = new Size(38, 15);
+            IntroText.TabIndex = 3;
+            IntroText.Text = "label1";
+            IntroText.Click += IntroText_Click;
             // 
             // Form2
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1206, 596);
-            Controls.Add(mediaList);
+            Controls.Add(IntroText);
             Controls.Add(GoToMediatequesPage);
             Controls.Add(mediaPageTitle);
             Name = "Form2";
@@ -83,6 +83,6 @@
 
         private Label mediaPageTitle;
         private Button GoToMediatequesPage;
-        private Label mediaList;
+        private Label IntroText;
     }
 }
