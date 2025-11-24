@@ -74,6 +74,7 @@
             Controls.Add(mediaPageTitle);
             Name = "Form2";
             Text = "Form2";
+            Load += Form2_Load;
             ResumeLayout(false);
             PerformLayout();
         }
