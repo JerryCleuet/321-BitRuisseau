@@ -20,7 +20,9 @@ namespace BitRuisseau
 
             mediaPageTitle.Text = "Liste des pistes audio disponibles";
             GoToMediatequesPage.Text = "Liste des médiathèques";
+            IntroText.Text = "Voici la liste des médias disponibles dans le dossier /médias ";
 
+            // Dossier où sont stockés les médias
             string mediaPath = Path.Combine(Environment.CurrentDirectory, "medias");
 
 
@@ -60,9 +62,25 @@ namespace BitRuisseau
                     var media = new Media(title, artist, year, duration, featuring);    // Instanciation d'un nouvel objet Media
                     mediaObjects.Add(media);    // Ajout de l'objet à la liste des médias
 
-                    string displayName = $"{media.Title} - {media.Duration} | {media.Artist} ({media.Year})";   // Format sous lequel je veux afficher mes musiques
+                    string displayName = $"{media.Title} | {media.Artist} ({media.Year})                             {media.Duration}";   // Format sous lequel je veux afficher mes musiques
 
                     displayNames.Add(displayName); // Ajout de la musique sous son bon format
+                    // Création et affichage du bouton
+                    Button btn = new Button();
+                    // Apparence texte
+                    btn.Text = displayName;
+                    btn.TextAlign = ContentAlignment.MiddleLeft;
+                    // Apparence bouton et location
+                    btn.Width = 350;
+                    int btnTop = 100 + 40 * displayNames.Count;
+                    btn.Location = new Point(30, btnTop);
+                    this.Controls.Add(btn);
+                    // Ouverture d'une messageBox quand on clique sur une musique
+                    btn.Click += (sender, e) =>
+                    {
+                        MessageBoxMusic box = new MessageBoxMusic($"Musique : {media.Title}\nArtiste : {media.Artist}\nAnnée : {media.Year}\nDurée : {media.Duration}");
+                        box.ShowDialog();
+                    };
                 }
                 catch
                 {
@@ -70,8 +88,8 @@ namespace BitRuisseau
                 }
 
             }
-            // Affichage des médias avec le label mediaList
-            mediaList.Text = string.Join("\n", displayNames);
+            // Affichage des médias avec le label mediaList (remplacé par les boutons)
+            // mediaList.Text = string.Join("\n", displayNames);
         }
 
 
@@ -82,13 +100,16 @@ namespace BitRuisseau
 
         private void GoToMediatequesPage_Click(object sender, EventArgs e)
         {
+            // Ouverture de Form1
             var f1 = new Form1();
             f1.FormClosed += (s, args) => this.Show();
+            // Cacher Form2
             this.Hide();
+            // Montrer Form1
             f1.Show();
         }
 
-        private void mediaList_Click(object sender, EventArgs e)
+        private void IntroText_Click(object sender, EventArgs e)
         {
 
         }
@@ -97,5 +118,6 @@ namespace BitRuisseau
         {
 
         }
+
     }
 }
