@@ -12,10 +12,10 @@ namespace BitRuisseau
         public string Artist { get; set; }
         public string Year { get; set; }
         public string Duration { get; set; }
-        public long Size { get; set; }
+        public string Size { get; set; }
         public string? Featuring { get; set; }
 
-        public Media(string title, string artist, string year, string duration, long size, string featuring)
+        public Media(string title, string artist, string year, string duration, string size, string featuring)
         {
             this.Title = title;
             this.Artist = artist;

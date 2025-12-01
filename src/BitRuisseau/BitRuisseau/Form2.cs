@@ -21,7 +21,7 @@ namespace BitRuisseau
 
             mediaPageTitle.Text = "Liste des pistes audio disponibles";
             GoToMediatequesPage.Text = "Liste des médiathèques";
-            IntroText.Text = "Voici la liste des médias disponibles dans le dossier /médias ";
+            IntroText.Text = $"Voici la liste des médias disponibles dans le dossier choisi";
 
             // Dossier où sont stockés les médias
             button1.Click += (sender, e) =>
@@ -34,70 +34,47 @@ namespace BitRuisseau
 
                         var mediaObjects = new List<Media>();           // Liste d'objets Media
                         var displayNames = new List<string>();          // Liste contenant ce qu'on cherche à afficher
-
+                        
                         foreach (var file in medias)
                         {
-                            try
+                            var tagFile = TagLib.File.Create(file); // Utilisation de la librairie TagLib# pour lire les métadonnées des fichiers audio
+                            string title = tagFile.Tag?.Title ?? "";
+                            string artist = tagFile.Tag?.FirstArtist ?? "";
+                            string year = tagFile.Tag?.Year.ToString() ?? "";
+                            string duration = tagFile.Properties.Duration.ToString(@"mm\:ss") ?? "";
+                            string size = (new FileInfo(file).Length / 1024).ToString() + " KB" ?? ""; // Taille du fichier en KB
+                            string featuring = tagFile.Tag?.JoinedPerformers ?? "";
+
+                            var media = new Media(title, artist, year, duration, size, featuring);    // Instanciation d'un nouvel objet Media
+                            mediaObjects.Add(media);    // Ajout de l'objet à la liste des médias
+
+                            string displayName = $"{media.Title} | {media.Artist} ({media.Year})                           {media.Duration} | {media.Size}";   // Format sous lequel je veux afficher mes musiques
+
+                            displayNames.Add(displayName);  // Ajout de la musique sous son bon format
+                            Button musicBtn = new Button(); // Création et affichage du bouton
+                            // Apparence texte
+                            musicBtn.Text = displayName;
+                            musicBtn.TextAlign = ContentAlignment.MiddleLeft;
+                            // Apparence bouton et location
+                            musicBtn.Width = 350;
+                            int btnTop = 100 + 40 * displayNames.Count;
+                            musicBtn.Location = new Point(30, btnTop);
+                            this.Controls.Add(musicBtn);
+
+                            // Ouverture d'une messageBox quand on clique sur une musique
+                            musicBtn.Click += (s, args) =>
                             {
-                                FileInfo infos = new FileInfo(file);
-                                var lines = File.ReadAllLines(file);
+                                MessageBoxMusic box = new MessageBoxMusic(
+                                    $"Musique : {media.Title}\nArtiste : {media.Artist}\nAnnée : {media.Year}\nDurée : {media.Duration}\nTaille : {media.Size}"
+                                );
+                                box.ShowDialog();
+                            };
 
-                                // Propriétés de Media
-                                string title = "";
-                                string artist = "";
-                                string year = "";
-                                string duration = "";
-                                long size = infos.Length;
-                                string featuring = "";
-
-                                // Pour chaque propriété de Media, on prend une ligne différente (dépendamment de l'organisation du fichier)
-                                if (lines.Length > 0)
-                                    title = lines[0];
-
-                                if (lines.Length > 1)
-                                    artist = lines[1];
-
-                                if (lines.Length > 2)
-                                    year = lines[2];
-
-                                if (lines.Length > 3)
-                                    duration = lines[3];
-
-                                if (lines.Length > 4)
-                                    featuring = lines[4];
-
-                                var media = new Media(title, artist, year, duration, size, featuring);    // Instanciation d'un nouvel objet Media
-                                mediaObjects.Add(media);    // Ajout de l'objet à la liste des médias
-
-                                string displayName = $"{media.Title} | {media.Artist} ({media.Year})                           {media.Duration} | {media.Size}";   // Format sous lequel je veux afficher mes musiques
-
-                                displayNames.Add(displayName); // Ajout de la musique sous son bon format
-                                                               // Création et affichage du bouton
-                                Button musicBtn = new Button();
-                                // Apparence texte
-                                musicBtn.Text = displayName;
-                                musicBtn.TextAlign = ContentAlignment.MiddleLeft;
-                                // Apparence bouton et location
-                                musicBtn.Width = 350;
-                                int btnTop = 100 + 40 * displayNames.Count;
-                                musicBtn.Location = new Point(30, btnTop);
-                                this.Controls.Add(musicBtn);
-
-                                // Ouverture d'une messageBox quand on clique sur une musique
-                                musicBtn.Click += (sender, e) =>
-                                {
-                                    MessageBoxMusic box = new MessageBoxMusic($"Musique : {media.Title}\nArtiste : {media.Artist}\nAnnée : {media.Year}\nDurée : {media.Duration}\nTaille : {media.Size}");
-                                    box.ShowDialog();
-                                };
-                            }
-                            catch
-                            {
-                                displayNames.Add(Path.GetFileName(file));
-                            }
                         }
-
-
-
+                    }
+                    else
+                    {
+                        MessageBox.Show("Aucun dossier sélectionné.");
                     }
                 }
 
