@@ -28,9 +28,13 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form2));
             mediaPageTitle = new Label();
             GoToMediatequesPage = new Button();
             IntroText = new Label();
+            axWindowsMediaPlayer1 = new AxWMPLib.AxWindowsMediaPlayer();
+            button1 = new Button();
+            ((System.ComponentModel.ISupportInitialize)axWindowsMediaPlayer1).BeginInit();
             SuspendLayout();
             // 
             // mediaPageTitle
@@ -64,17 +68,40 @@
             IntroText.Text = "label1";
             IntroText.Click += IntroText_Click;
             // 
+            // axWindowsMediaPlayer1
+            // 
+            axWindowsMediaPlayer1.Enabled = true;
+            axWindowsMediaPlayer1.Location = new Point(395, 100);
+            axWindowsMediaPlayer1.Name = "axWindowsMediaPlayer1";
+            axWindowsMediaPlayer1.OcxState = (AxHost.State)resources.GetObject("axWindowsMediaPlayer1.OcxState");
+            axWindowsMediaPlayer1.Size = new Size(229, 45);
+            axWindowsMediaPlayer1.TabIndex = 4;
+            axWindowsMediaPlayer1.Enter += axWindowsMediaPlayer1_Enter;
+            // 
+            // button1
+            // 
+            button1.Location = new Point(574, 29);
+            button1.Name = "button1";
+            button1.Size = new Size(88, 42);
+            button1.TabIndex = 5;
+            button1.Text = "Dossier de médias";
+            button1.UseVisualStyleBackColor = true;
+            button1.Click += button1_Click;
+            // 
             // Form2
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1206, 596);
+            Controls.Add(button1);
+            Controls.Add(axWindowsMediaPlayer1);
             Controls.Add(IntroText);
             Controls.Add(GoToMediatequesPage);
             Controls.Add(mediaPageTitle);
             Name = "Form2";
             Text = "Form2";
             Load += Form2_Load;
+            ((System.ComponentModel.ISupportInitialize)axWindowsMediaPlayer1).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -84,5 +111,7 @@
         private Label mediaPageTitle;
         private Button GoToMediatequesPage;
         private Label IntroText;
+        private AxWMPLib.AxWindowsMediaPlayer axWindowsMediaPlayer1;
+        private Button button1;
     }
 }
