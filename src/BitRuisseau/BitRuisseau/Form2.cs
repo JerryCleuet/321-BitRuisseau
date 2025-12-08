@@ -70,6 +70,21 @@ namespace BitRuisseau
                                 box.ShowDialog();
                             };
 
+                            // Bouton pour lancer la musique / la mettre en pause / l'arrêter
+                            Button startMusicBtn = new Button();
+                            startMusicBtn.Text = "▶";
+                            startMusicBtn.Width = 30;
+                            startMusicBtn.Location = new Point(400, btnTop);
+                            this.Controls.Add(startMusicBtn);
+
+
+                            startMusicBtn.Click += (s, args) =>
+                            {
+
+                                axWindowsMediaPlayer1.URL = string.Join(fbd.SelectedPath, tagFile.Name) ;
+                                axWindowsMediaPlayer1.Ctlcontrols.play();
+                            };
+
                         }
                     }
                     else
