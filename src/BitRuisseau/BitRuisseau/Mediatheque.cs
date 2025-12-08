@@ -9,12 +9,13 @@ namespace BitRuisseau
 {
     public class Mediatheque
     {
-        public string Name {  get; set; }
-        public string[] Medias { get; set; }
-        public Mediatheque(string name, string[] medias)
+        public string Id { get; init; } = Guid.NewGuid().ToString();
+
+        public string Name { get; set; }
+        public Mediatheque(string id, string name )
         {
             this.Name = name;
-            this.Medias = medias;
+            this.Id = id;
         }
 
     }

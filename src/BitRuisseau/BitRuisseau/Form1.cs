@@ -1,3 +1,8 @@
+using BitRuisseau.Protocol;
+using Microsoft.VisualBasic.Devices;
+using System.Drawing.Text;
+using System.Text.Json;
+
 namespace BitRuisseau
 {
     public partial class Form1 : Form
@@ -10,26 +15,25 @@ namespace BitRuisseau
             MainTitle.Text = "Liste des médiathèques";
             goToMediaPage.Text = "Liste des médias";
             List<string> mediatheques = new List<string>();
-
-            if(mediatheques.Count == 0)
-            {
-                Button createMediathequeBtn = new();
-                createMediathequeBtn.Text = "Créer une nouvelle médiathèque";
-                createMediathequeBtn.Location = new Point(100, 100);
-                createMediathequeBtn.Width = 200;
-                this.Controls.Add(createMediathequeBtn);
-                createMediathequeBtn.Click += (sender, e) =>
-                {
-                    MediathequeBox box = new("Création d'une médiathèque");
-                    box.ShowDialog();
-                };
-            }
-
+           
             foreach (var mediatheque in mediatheques)
             {
                 Button mediathequeBtn = new();
             }
         }
+
+       /* private void OnMessageReceived(Enveloppe envelope)
+        {
+            switch (envelope.Type)
+            {
+                case MessageType.WHO_IS_THERE:
+                    _logger.LogInformation(envelope.SenderId + MessageType.I_AM_HERE);
+                    break;
+                case MessageType.I_AM_HERE:
+                    break;
+            }
+        }*/
+
 
         private void label1_Click(object sender, EventArgs e)
         {
