@@ -61,7 +61,7 @@
             // IntroText
             // 
             IntroText.AutoSize = true;
-            IntroText.Location = new Point(35, 100);
+            IntroText.Location = new Point(35, 76);
             IntroText.Name = "IntroText";
             IntroText.Size = new Size(38, 15);
             IntroText.TabIndex = 3;
