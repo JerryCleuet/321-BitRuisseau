@@ -8,5 +8,6 @@
         CATALOG,            // retourne son catalogue à la médiathèque qui avait émis la demande (i.e. utiliser RecipientId)
         FRAGMENT_REQUEST,   // demande tout ou partie d'un média à une médiathèque précise  (i.e. utiliser RecipientId)
         FRAGMENT,           // retourne le fragment demandé
+        I_AM_OUT,           // quand on quitte le réseau
     }
 }
