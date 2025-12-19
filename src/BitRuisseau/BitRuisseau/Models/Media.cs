@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace BitRuisseau
+namespace BitRuisseau.Models
 {
     public class Media
     {
@@ -22,12 +22,12 @@ namespace BitRuisseau
 
         public Media(string title, string artist, string year, TimeSpan duration, long size, string featuring)
         {
-            this.Title = title;
-            this.Artist = artist;
-            this.Year = year;
-            this.Duration = duration;
-            this.Size = size;
-            this.Featuring = featuring;
+            Title = title;
+            Artist = artist;
+            Year = year;
+            Duration = duration;
+            Size = size;
+            Featuring = featuring;
         }
     }
 }

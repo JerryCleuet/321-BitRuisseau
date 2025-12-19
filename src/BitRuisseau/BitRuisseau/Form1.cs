@@ -15,24 +15,24 @@ namespace BitRuisseau
             MainTitle.Text = "Liste des médiathèques";
             goToMediaPage.Text = "Liste des médias";
             List<string> mediatheques = new List<string>();
-           
+
             foreach (var mediatheque in mediatheques)
             {
                 Button mediathequeBtn = new();
             }
         }
 
-       /* private void OnMessageReceived(Enveloppe envelope)
-        {
-            switch (envelope.Type)
-            {
-                case MessageType.WHO_IS_THERE:
-                    _logger.LogInformation(envelope.SenderId + MessageType.I_AM_HERE);
-                    break;
-                case MessageType.I_AM_HERE:
-                    break;
-            }
-        }*/
+        /* private void OnMessageReceived(Enveloppe envelope)
+         {
+             switch (envelope.Type)
+             {
+                 case MessageType.WHO_IS_THERE:
+                     _logger.LogInformation(envelope.SenderId + MessageType.I_AM_HERE);
+                     break;
+                 case MessageType.I_AM_HERE:
+                     break;
+             }
+         }*/
 
 
         private void label1_Click(object sender, EventArgs e)
@@ -45,6 +45,11 @@ namespace BitRuisseau
             f2.FormClosed += (s, args) => this.Show();
             this.Hide();
             f2.Show();
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

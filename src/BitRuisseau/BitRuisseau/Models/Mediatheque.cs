@@ -5,17 +5,17 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BitRuisseau
+namespace BitRuisseau.Models
 {
     public class Mediatheque
     {
         public string Id { get; init; } = Guid.NewGuid().ToString();
 
         public string Name { get; set; }
-        public Mediatheque(string id, string name )
+        public Mediatheque(string id, string name)
         {
-            this.Name = name;
-            this.Id = id;
+            Name = name;
+            Id = id;
         }
 
     }

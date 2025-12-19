@@ -10,11 +10,17 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing.Text;
+using BitRuisseau.Models;
+using BitRuisseau.Protocol;
+using BitRuisseau.Services;
 
 namespace BitRuisseau
 {
     public partial class Form2 : Form
     {
+        MediaCenter _mediaCenter = new MediaCenter() { Name = "Jerry" };
+        MqttService _mqttService;
+
         public Form2()
         {
             InitializeComponent();
@@ -23,6 +29,15 @@ namespace BitRuisseau
             mediaPageTitle.Text = "Liste des pistes audio disponibles";
             GoToMediatequesPage.Text = "Liste des médiathèques";
             IntroText.Text = $"Voici la liste des médias disponibles dans le dossier choisi";
+
+            ShowMusicList();
+
+            _mqttService = new MqttService(_mediaCenter);
+        }
+
+        public async void ShowMusicList()
+        {
+            await _mqttService.StartAsync();
 
             MediaLibrary _library = new MediaLibrary();
 
@@ -40,7 +55,7 @@ namespace BitRuisseau
 
                         foreach (var file in _library.Medias)
                         {
-                            string displayName = $"{file.Title} | {file.Artist} ({file.Year}) {Math.Round((file.Duration.TotalMinutes),2 )} | {file.Size}";   // Format sous lequel je veux afficher mes musiques
+                            string displayName = $"{file.Title} | {file.Artist} ({file.Year}) {Math.Round((file.Duration.TotalMinutes), 2)} | {file.Size}";   // Format sous lequel je veux afficher mes musiques
 
                             Button musicBtn = new Button(); // Création et affichage du bouton
 
@@ -88,8 +103,6 @@ namespace BitRuisseau
 
             };
         }
-
-
         private void label1_Click(object sender, EventArgs e)
         {
 
