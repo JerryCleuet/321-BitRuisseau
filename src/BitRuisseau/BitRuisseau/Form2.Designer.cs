@@ -113,5 +113,6 @@
         private Label IntroText;
         private AxWMPLib.AxWindowsMediaPlayer axWindowsMediaPlayer1;
         private Button button1;
+        private ListBox listBox1;
     }
 }

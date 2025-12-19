@@ -14,25 +14,9 @@ namespace BitRuisseau
             string path = Path.Combine(Environment.CurrentDirectory, "medias"); ;
             MainTitle.Text = "Liste des médiathèques";
             goToMediaPage.Text = "Liste des médias";
-            List<string> mediatheques = new List<string>();
-
-            foreach (var mediatheque in mediatheques)
-            {
-                Button mediathequeBtn = new();
-            }
+            
+                
         }
-
-        /* private void OnMessageReceived(Enveloppe envelope)
-         {
-             switch (envelope.Type)
-             {
-                 case MessageType.WHO_IS_THERE:
-                     _logger.LogInformation(envelope.SenderId + MessageType.I_AM_HERE);
-                     break;
-                 case MessageType.I_AM_HERE:
-                     break;
-             }
-         }*/
 
 
         private void label1_Click(object sender, EventArgs e)

@@ -17,22 +17,29 @@ namespace BitRuisseau.Services
             _mediaCenterInstance = mediaCenter;
         }
 
+        private const string BrokerHost = "mqtt.blue.section-inf.ch";
+        private const int BrokerPort = 1883;
+        private const string BrokerUsername = "ict";
+        private const string BrokerPassword = "321";
         public async Task StartAsync()
         {
             var factory = new MqttClientFactory();
             _client = factory.CreateMqttClient();
 
-            // connection settings
-            var options = new MqttClientOptionsBuilder()
-                .WithTcpServer("mqtt.blue.section-inf.ch", 1883)
-                .WithCredentials("ict", "321")
-                .WithTimeout(TimeSpan.FromSeconds(10))
-                .WithKeepAlivePeriod(TimeSpan.FromSeconds(60))
-                .WithCleanStart(true)
-                .Build();
 
-            // event handler
-            _client.ConnectedAsync += e =>
+
+        var options = new MqttClientOptionsBuilder()
+            .WithTcpServer(BrokerHost, BrokerPort)
+            .WithCredentials(BrokerUsername, BrokerPassword)
+            //.WithWillPayload(new Envelope(_mediaCenterInstance.Id, null, MessageType.I_AM_OUT, "").ToJson)
+            .WithWillQualityOfServiceLevel(MQTTnet.Protocol.MqttQualityOfServiceLevel.ExactlyOnce)
+            .WithTimeout(TimeSpan.FromSeconds(10))
+            .WithKeepAlivePeriod(TimeSpan.FromSeconds(60))
+            .WithCleanStart(true)
+            .Build();
+
+        // event handler
+        _client.ConnectedAsync += e =>
             {
                 // ask all users and announce his own presence to the network
                 Send(new Envelope(_mediaCenterInstance.Id, null, MessageType.WHO_IS_THERE, _mediaCenterInstance.ToString()));
@@ -67,7 +74,7 @@ namespace BitRuisseau.Services
         {
             var message = new MqttApplicationMessageBuilder()
                 .WithTopic("users")
-                .WithPayload(envelope.ToString())
+                .WithPayload(JsonSerializer.Serialize(envelope))
                 .Build();
 
             await _client.PublishAsync(message);
@@ -78,7 +85,7 @@ namespace BitRuisseau.Services
             switch (envelope.Type)
             {
                 case MessageType.WHO_IS_THERE:
-                    await Send(new Envelope(_mediaCenterInstance.Id, null, MessageType.I_AM_HERE, _mediaCenterInstance.ToString()));
+                    await Send(new Envelope(_mediaCenterInstance.Id, null, MessageType.I_AM_HERE, JsonSerializer.Serialize(_mediaCenterInstance)));
                     break;
             }
         }
