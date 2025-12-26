@@ -9,3 +9,16 @@
 - Implémentation: J'imagine que ça fonctionne chez vous, mais pas chez moi: crash sur "var medias = Directory.GetFiles(mediaPath);".
 
 - Global: Pas au niveau attendu
+
+## 80%
+
+- Réalisation du player standalone:
+- Réalisation du player connecté:
+- Qualité du code:
+- Maîtrise technique:
+- Autonomie:
+- Livraison: pas de notification
+- Journal de travail:
+- .gitignore:
+
+- En résumé:
