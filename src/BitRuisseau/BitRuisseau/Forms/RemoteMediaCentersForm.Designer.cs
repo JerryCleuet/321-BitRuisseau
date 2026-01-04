@@ -1,6 +1,6 @@
 ﻿namespace BitRuisseau
 {
-    partial class Form1
+    partial class RemoteMediaCentersForm
     {
         /// <summary>
         ///  Required designer variable.
@@ -30,6 +30,7 @@
         {
             MainTitle = new Label();
             goToMediaPage = new Button();
+            listBoxRemote = new ListBox();
             SuspendLayout();
             // 
             // MainTitle
@@ -53,15 +54,25 @@
             goToMediaPage.UseVisualStyleBackColor = true;
             goToMediaPage.Click += goToMediaPage_Click;
             // 
-            // Form1
+            // listBoxRemote
+            // 
+            listBoxRemote.FormattingEnabled = true;
+            listBoxRemote.ItemHeight = 15;
+            listBoxRemote.Location = new Point(40, 92);
+            listBoxRemote.Name = "listBoxRemote";
+            listBoxRemote.Size = new Size(335, 454);
+            listBoxRemote.TabIndex = 2;
+            // 
+            // RemoteMediaCentersForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1198, 654);
+            Controls.Add(listBoxRemote);
             Controls.Add(goToMediaPage);
             Controls.Add(MainTitle);
-            Name = "Form1";
-            Text = "Form1";
+            Name = "RemoteMediaCentersForm";
+            Text = "RemoteMediaCentersForm";
             Load += Form1_Load;
             ResumeLayout(false);
             PerformLayout();
@@ -71,5 +82,6 @@
 
         private Label MainTitle;
         private Button goToMediaPage;
+        private ListBox listBoxRemote;
     }
 }

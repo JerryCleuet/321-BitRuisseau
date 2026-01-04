@@ -12,8 +12,8 @@ namespace BitRuisseau
         [STAThread]
         static void Main()
         {
-
-            Application.Run(new Form2());
+            List<MediaCenter> _remoteMediaCenters = new List<MediaCenter>();    // Création d'une liste factice pour juste afficher la page au début
+            Application.Run(new RemoteMediaCentersForm(_remoteMediaCenters));
         }
     }
 }

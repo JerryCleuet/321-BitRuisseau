@@ -4,6 +4,7 @@ using MQTTnet;
 using System.Buffers;
 using System.Text;
 using System.Text.Json;
+using Backend.Protocol;
 
 namespace BitRuisseau.Services
 {
@@ -11,7 +12,9 @@ namespace BitRuisseau.Services
     {
         private IMqttClient _client;
         private MediaCenter _mediaCenterInstance;
-
+        private const string Topic = "test";   // Topic MQTT utilisé pour communiquer avec les autres
+        private Dictionary<string, MediaCenter> _remoteMediaCenters = new Dictionary<string, MediaCenter>();    // Dictionnaire pour stocker les MediaCenters
+        public IReadOnlyCollection<MediaCenter> RemoteMediaCenters => _remoteMediaCenters.Values;   // Collection publiques pour l'affichage des mediacenters dans l'UI
         public MqttService(MediaCenter mediaCenter)
         {
             _mediaCenterInstance = mediaCenter;
@@ -31,7 +34,7 @@ namespace BitRuisseau.Services
         var options = new MqttClientOptionsBuilder()
             .WithTcpServer(BrokerHost, BrokerPort)
             .WithCredentials(BrokerUsername, BrokerPassword)
-            //.WithWillPayload(new Envelope(_mediaCenterInstance.Id, null, MessageType.I_AM_OUT, "").ToJson)
+            .WithWillPayload(JsonSerializer.Serialize(new Envelope(_mediaCenterInstance.Id, null, MessageType.I_AM_OUT, "")))
             .WithWillQualityOfServiceLevel(MQTTnet.Protocol.MqttQualityOfServiceLevel.ExactlyOnce)
             .WithTimeout(TimeSpan.FromSeconds(10))
             .WithKeepAlivePeriod(TimeSpan.FromSeconds(60))
@@ -42,7 +45,7 @@ namespace BitRuisseau.Services
         _client.ConnectedAsync += e =>
             {
                 // ask all users and announce his own presence to the network
-                Send(new Envelope(_mediaCenterInstance.Id, null, MessageType.WHO_IS_THERE, _mediaCenterInstance.ToString()));
+                Send(new Envelope(_mediaCenterInstance.Id, null, MessageType.WHO_IS_THERE, ""));
                 return Task.CompletedTask;
             };
 
@@ -52,7 +55,21 @@ namespace BitRuisseau.Services
                 var payload = Encoding.UTF8.GetString(e.ApplicationMessage.Payload.ToArray<byte>() ?? Array.Empty<byte>());
 
                 // deserialize content to Envelope
-                Envelope env = JsonSerializer.Deserialize<Envelope>(payload);
+                // Protection contre les messages mal formés pour éviter les crashs
+                Envelope? env;
+                try
+                {
+                    env = JsonSerializer.Deserialize<Envelope>(payload);
+                }
+                catch
+                {
+                    return Task.CompletedTask;
+                }
+
+                if (env == null)
+                {
+                    return Task.CompletedTask;
+                }
 
                 // not processing one's own messages
                 if (env.Id != _mediaCenterInstance.Id)
@@ -67,13 +84,13 @@ namespace BitRuisseau.Services
             await _client.ConnectAsync(options);
 
             // subscribe
-            await _client.SubscribeAsync("#");
+            await _client.SubscribeAsync(Topic);
         }
 
         public async Task Send(Envelope envelope)
         {
             var message = new MqttApplicationMessageBuilder()
-                .WithTopic("users")
+                .WithTopic(Topic)
                 .WithPayload(JsonSerializer.Serialize(envelope))
                 .Build();
 
@@ -86,6 +103,35 @@ namespace BitRuisseau.Services
             {
                 case MessageType.WHO_IS_THERE:
                     await Send(new Envelope(_mediaCenterInstance.Id, null, MessageType.I_AM_HERE, JsonSerializer.Serialize(_mediaCenterInstance)));
+                    break;
+                case MessageType.I_AM_HERE:
+                    MediaCenter? remoteMediaCenter;
+
+                    try
+                    {
+                        remoteMediaCenter =
+                            JsonSerializer.Deserialize<MediaCenter>(envelope.Message);
+                    }
+                    catch
+                    {
+                        break;
+                    }
+
+                    if (remoteMediaCenter == null)  // Si le message est mal formé, break
+                    {
+                        break;
+                    }
+
+                    if (_remoteMediaCenters.ContainsKey(remoteMediaCenter.Id))  // Si on a déjà ce MediaCenter dans la liste, break
+                    {
+                        break;
+                    }
+
+                    _remoteMediaCenters.Add(remoteMediaCenter.Id, remoteMediaCenter);   // Ajout du MediaCenter à la liste
+                    break;
+
+                case MessageType.I_AM_OUT:
+                    _remoteMediaCenters.Remove(envelope.Id);
                     break;
             }
         }

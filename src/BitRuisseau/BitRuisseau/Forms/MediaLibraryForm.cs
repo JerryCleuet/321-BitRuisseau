@@ -16,54 +16,24 @@ using BitRuisseau.Services;
 
 namespace BitRuisseau
 {
-    public partial class Form2 : Form
+    public partial class MediaLibraryForm : Form
     {
-        MediaCenter _mediaCenter = new MediaCenter() { Name = "Jerry" };
-        MqttService _mqttService;
+        List<MediaCenter> _remoteMediaCenters = new List<MediaCenter>();
 
-        public Form2()
+        public MediaLibraryForm()
         {
             InitializeComponent();
             mediaPageTitle.Text = "Liste des pistes audio disponibles";
             GoToMediatequesPage.Text = "Liste des médiathèques";
             IntroText.Text = $"Voici la liste des médias disponibles dans le dossier choisi";
 
-            _mqttService = new MqttService(_mediaCenter);
-
-
-            StartMqtt();
             ShowMusicList();
         }
 
-        public async Task StartMqtt()
-        {
-            try
-            {
-                await _mqttService.StartAsync();
-            }
-            catch (Exception ex)
-            {
-                // do not crash the UI if MQTT fails to start
-                MessageBox.Show($"Impossible de démarrer le service MQTT : {ex.Message}", "Erreur MQTT", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
-        }
 
         public void ShowMusicList()
         {
             MediaLibrary _library = new MediaLibrary();
-            // Définition d'un dossier de médias par défaut
-            string defaultPath = Path.GetFullPath(
-                Path.Combine(
-                    AppDomain.CurrentDomain.BaseDirectory,
-                    @"..\..\..\..\..\..\medias\Test"
-                     )
-            );
-
-            // Chargement automatique au démarrage du dossier par défaut
-            if (Directory.Exists(defaultPath))
-            {
-                LoadAndDisplay(defaultPath, _library);
-            }
 
             // Si on clique sur le bouton, on peut choisir le dossier de médias
             button1.Click += (sender, e) =>
@@ -96,7 +66,7 @@ namespace BitRuisseau
 
             int mediaBtnIndex = 0;
 
-            foreach (var file in _library.Medias)
+            foreach (Media file in _library.Medias)
             {
                 // Syntaxe des musiques
                 string displayName =
@@ -157,7 +127,7 @@ namespace BitRuisseau
         private void GoToMediatequesPage_Click(object sender, EventArgs e)
         {
             // Création de Form1
-            var f1 = new Form1();
+            RemoteMediaCentersForm f1 = new RemoteMediaCentersForm(_remoteMediaCenters);
             f1.FormClosed += (s, args) => this.Show();
             // Cacher Form2
             this.Hide();

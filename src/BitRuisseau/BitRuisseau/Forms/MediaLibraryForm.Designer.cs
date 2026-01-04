@@ -1,6 +1,6 @@
 ﻿namespace BitRuisseau
 {
-    partial class Form2
+    partial class MediaLibraryForm
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form2));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MediaLibraryForm));
             mediaPageTitle = new Label();
             GoToMediatequesPage = new Button();
             IntroText = new Label();
@@ -88,7 +88,7 @@
             button1.UseVisualStyleBackColor = true;
             button1.Click += button1_Click;
             // 
-            // Form2
+            // MediaLibraryForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
@@ -98,8 +98,8 @@
             Controls.Add(IntroText);
             Controls.Add(GoToMediatequesPage);
             Controls.Add(mediaPageTitle);
-            Name = "Form2";
-            Text = "Form2";
+            Name = "MediaLibraryForm";
+            Text = "MediaLibraryForm";
             Load += Form2_Load;
             ((System.ComponentModel.ISupportInitialize)axWindowsMediaPlayer1).EndInit();
             ResumeLayout(false);
