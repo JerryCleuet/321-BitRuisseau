@@ -10,8 +10,8 @@ namespace BitRuisseau.Services
 {
     public class MqttService
     {
-        private IMqttClient _client;
-        private MediaCenter _mediaCenterInstance;
+        private IMqttClient _client;    // Client MQTT
+        private MediaCenter _mediaCenterInstance;   // Instance locale du MediaCenter
         private const string Topic = "test";   // Topic MQTT utilisé pour communiquer avec les autres
         private Dictionary<string, MediaCenter> _remoteMediaCenters = new Dictionary<string, MediaCenter>();    // Dictionnaire pour stocker les MediaCenters
         public IReadOnlyCollection<MediaCenter> RemoteMediaCenters => _remoteMediaCenters.Values;   // Collection publiques pour l'affichage des mediacenters dans l'UI
@@ -25,6 +25,8 @@ namespace BitRuisseau.Services
         private const int BrokerPort = 1883;
         private const string BrokerUsername = "ict";
         private const string BrokerPassword = "321";
+
+        // Méthode pour démarrer le service MQTT
         public async Task StartAsync()
         {
             var factory = new MqttClientFactory();
@@ -33,19 +35,19 @@ namespace BitRuisseau.Services
 
 
         var options = new MqttClientOptionsBuilder()
-            .WithTcpServer(BrokerHost, BrokerPort)
-            .WithCredentials(BrokerUsername, BrokerPassword)
-            .WithWillPayload(JsonSerializer.Serialize(new Envelope(_mediaCenterInstance.Id, null, MessageType.I_AM_OUT, "I am out gng")))
-            .WithWillQualityOfServiceLevel(MQTTnet.Protocol.MqttQualityOfServiceLevel.ExactlyOnce)
-            .WithTimeout(TimeSpan.FromSeconds(10))
-            .WithKeepAlivePeriod(TimeSpan.FromSeconds(60))
-            .WithCleanStart(true)
-            .Build();
+            .WithTcpServer(BrokerHost, BrokerPort)  // Adresse du broker MQTT
+            .WithCredentials(BrokerUsername, BrokerPassword)    // Authentification auprès du broker MQTT
+            .WithWillPayload(JsonSerializer.Serialize(new Envelope(_mediaCenterInstance.Id, null, MessageType.I_AM_OUT, "I am out gng")))   // Payload du message de "will"
+            .WithWillQualityOfServiceLevel(MQTTnet.Protocol.MqttQualityOfServiceLevel.ExactlyOnce)  // Qualité de service pour le message de "will"
+            .WithTimeout(TimeSpan.FromSeconds(10))  // Timeout de connexion
+            .WithKeepAlivePeriod(TimeSpan.FromSeconds(60))  // Période de keep-alive pour maintenir la connexion
+            .WithCleanStart(true)   // Fais en sorte de ne pas recevoir les messages anciens
+            .Build();   // Construction des options de connexion
 
-        // event handler
-        _client.ConnectedAsync += e =>
+            // Gestion des événements MQTT
+            _client.ConnectedAsync += e =>
             {
-                // ask all users and announce his own presence to the network
+                // Après connexion, envoyer un message WHO_IS_THERE pour découvrir les autres MediaCenters
                 Send(new Envelope(_mediaCenterInstance.Id, null, MessageType.WHO_IS_THERE, "who is there ?"));
                 return Task.CompletedTask;
             };
@@ -55,7 +57,7 @@ namespace BitRuisseau.Services
                 var topic = e.ApplicationMessage.Topic;
                 var payload = Encoding.UTF8.GetString(e.ApplicationMessage.Payload.ToArray<byte>() ?? Array.Empty<byte>());
 
-                // deserialize content to Envelope
+                // Deserialization du message reçu
                 // Protection contre les messages mal formés pour éviter les crashs
                 Envelope? env;
                 try
@@ -72,7 +74,7 @@ namespace BitRuisseau.Services
                     return Task.CompletedTask;
                 }
 
-                // not processing one's own messages
+                // Ignorer les messages provenant de soi-même
                 if (env.Id != _mediaCenterInstance.Id)
                 {
                     OnMessageReceived(env);
@@ -81,13 +83,14 @@ namespace BitRuisseau.Services
                 return Task.CompletedTask;
             };
 
-            // connect
+            // Se connecter
             await _client.ConnectAsync(options);
 
-            // subscribe
+            // S'abonner au topic
             await _client.SubscribeAsync(Topic);
         }
 
+        // Méthode pour envoyer un message MQTT
         public async Task Send(Envelope envelope)
         {
             var message = new MqttApplicationMessageBuilder()
@@ -102,10 +105,10 @@ namespace BitRuisseau.Services
         {
             switch (envelope.Type)
             {
-                case MessageType.WHO_IS_THERE:
+                case MessageType.WHO_IS_THERE:  // Quand on reçoit un WHO_IS_THERE, on répond avec I_AM_HERE
                     await Send(new Envelope(_mediaCenterInstance.Id, null, MessageType.I_AM_HERE, JsonSerializer.Serialize(_mediaCenterInstance)));
                     break;
-                case MessageType.I_AM_HERE:
+                case MessageType.I_AM_HERE: // Quand on reçoit un I_AM_HERE, on ajoute le MediaCenter à la liste s'il n'existe pas déjà
 
                     if (envelope.Id == _mediaCenterInstance.Id)
                         break;
@@ -140,8 +143,8 @@ namespace BitRuisseau.Services
                    
                     break;
 
-                case MessageType.I_AM_OUT:
-                    if(_remoteMediaCenters.Remove(envelope.Id))
+                case MessageType.I_AM_OUT:  // Quand on reçoit un I_AM_OUT, on retire le MediaCenter de la liste
+                    if (_remoteMediaCenters.Remove(envelope.Id))
                     {
                         RemoteMediaCentersChanged?.Invoke(); // Notifie l'UI qu'il y a un changement
                     }

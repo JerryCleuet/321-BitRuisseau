@@ -10,7 +10,7 @@ namespace BitRuisseau
         public static MediaCenter AppMediaCenter;
         public static MqttService AppMqttService;
         /// <summary>
-        ///  The main entry point for the application.
+        /// Point d'entrée principal de l'application.
         /// </summary>
         [STAThread]
 
@@ -18,16 +18,19 @@ namespace BitRuisseau
         {
             List<MediaCenter> _remoteMediaCenters = new List<MediaCenter>();    // Création d'une liste factice pour juste afficher la page au début
 
+            // Création du MediaCenter local
             AppMediaCenter = new MediaCenter()
             {
                 Name = "Jerry"
             };
-            AppMqttService = new MqttService(AppMediaCenter);
+
+            AppMqttService = new MqttService(AppMediaCenter);   // Création du service MQTT avec le MediaCenter local
             StartMqtt();
-            Application.Run(new RemoteMediaCentersForm(AppMqttService));
+            Application.Run(new RemoteMediaCentersForm(AppMqttService));    // Démarrage de l'application avec le formulaire RemoteMediaCentersForm
 
         }
-    private static async void StartMqtt()
+        // Méthode pour démarrer le service MQTT de manière asynchrone
+        private static async void StartMqtt()
         {
             try
             {
@@ -39,5 +42,6 @@ namespace BitRuisseau
                 MessageBox.Show($"Impossible de d�marrer le service MQTT : {ex.Message}", "Erreur MQTT", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
+
     }
 }

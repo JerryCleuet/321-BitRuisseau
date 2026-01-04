@@ -18,8 +18,6 @@ namespace BitRuisseau
 {
     public partial class MediaLibraryForm : Form
     {
-        List<MediaCenter> _remoteMediaCenters = new List<MediaCenter>();
-
         public MediaLibraryForm()
         {
             InitializeComponent();
@@ -53,6 +51,7 @@ namespace BitRuisseau
                 }
             };
         }
+        // Méthode pour charger et afficher les médias
         private void LoadAndDisplay(string path, MediaLibrary _library)
         {
             _library.LoadFiles(path);
@@ -110,13 +109,13 @@ namespace BitRuisseau
 
                 startMusicBtn.Click += (s, args) =>
                 {
-                    axWindowsMediaPlayer1.URL = file.Filepath;
-                    axWindowsMediaPlayer1.Ctlcontrols.play();
+                    axWindowsMediaPlayer1.URL = file.Filepath;  // Définit le chemin du fichier à lire
+                    axWindowsMediaPlayer1.Ctlcontrols.play();   // Démarre la lecture
                 };
 
-                this.Controls.Add(startMusicBtn);
+                this.Controls.Add(startMusicBtn);   // Ajoute le bouton de lecture au formulaire
 
-                mediaBtnIndex++;
+                mediaBtnIndex++;    // Incrémente l'index des boutons médias
             }
         }
         private void label1_Click(object sender, EventArgs e)
@@ -126,13 +125,10 @@ namespace BitRuisseau
 
         private void GoToMediatequesPage_Click(object sender, EventArgs e)
         {
-            // Création de Form1
-            RemoteMediaCentersForm f1 = new RemoteMediaCentersForm(Program.AppMqttService);
-            f1.FormClosed += (s, args) => this.Show();
-            // Cacher Form2
-            this.Hide();
-            // Montrer Form1
-            f1.Show();
+            RemoteMediaCentersForm f1 = new RemoteMediaCentersForm(Program.AppMqttService); // Crée une nouvelle instance du formulaire RemoteMediaCentersForm
+            f1.FormClosed += (s, args) => this.Show();  // Ajoute un gestionnaire d'événements pour afficher à nouveau ce formulaire lorsque f1 est fermé
+            this.Hide();    // Cache le formulaire actuel
+            f1.Show();  // Affiche le formulaire RemoteMediaCentersForm
         }
 
         private void IntroText_Click(object sender, EventArgs e)
