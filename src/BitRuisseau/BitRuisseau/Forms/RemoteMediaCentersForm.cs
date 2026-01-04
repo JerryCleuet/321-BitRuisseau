@@ -1,38 +1,49 @@
+﻿using Backend.Protocol;
 using BitRuisseau.Protocol;
 using BitRuisseau.Services;
+using Microsoft.VisualBasic.Devices;
+using System.Drawing.Text;
+using System.Text.Json;
 
 namespace BitRuisseau
 {
     public partial class RemoteMediaCentersForm : Form
     {
         MqttService _mqttService;
-        MediaCenter _mediaCenter;
-        public RemoteMediaCentersForm(IReadOnlyCollection<MediaCenter> mediaCenters)
+        public RemoteMediaCentersForm(MqttService mqttService)
         {
             InitializeComponent();
-            foreach (MediaCenter mediaCenter in mediaCenters)
+            _mqttService = mqttService;
+            _mqttService.RemoteMediaCentersChanged += () =>
             {
-                listBoxRemote.Items.Add($"{mediaCenter.Name}({mediaCenter.Id})");
-            }
-            _mediaCenter = new MediaCenter()
-            {
-                Name = "Jerry"
+                if (InvokeRequired)
+                    Invoke((Action)UpdateMediaCentersList);
+                else
+                    UpdateMediaCentersList();
             };
-            _mqttService = new MqttService(_mediaCenter);
-            StartMqtt();
+            UpdateMediaCentersList();
         }
-        private async void StartMqtt()
+
+
+
+        private void UpdateMediaCentersList()
         {
-            try
+            listBoxRemote.Items.Clear();
+            foreach (var mc in _mqttService.RemoteMediaCenters)
             {
-                await _mqttService.StartAsync();
-            }
-            catch (Exception ex)
-            {
-                // do not crash the UI if MQTT fails to start
-                MessageBox.Show($"Impossible de d�marrer le service MQTT : {ex.Message}", "Erreur MQTT", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                listBoxRemote.Items.Add($"{mc.Name} ({mc.Id})");
             }
         }
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            base.OnFormClosing(e);
+
+            // Envoie I_AM_OUT pour signaler aux autres que cette médiathèque se déconnecte
+            _mqttService.Send(new Envelope(Program.AppMediaCenter.Id, null, MessageType.I_AM_OUT, "")).Wait();
+        }
+
+
+
 
         private void label1_Click(object sender, EventArgs e)
         {

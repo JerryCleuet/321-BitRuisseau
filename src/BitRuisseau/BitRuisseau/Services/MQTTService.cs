@@ -15,6 +15,7 @@ namespace BitRuisseau.Services
         private const string Topic = "test";   // Topic MQTT utilisé pour communiquer avec les autres
         private Dictionary<string, MediaCenter> _remoteMediaCenters = new Dictionary<string, MediaCenter>();    // Dictionnaire pour stocker les MediaCenters
         public IReadOnlyCollection<MediaCenter> RemoteMediaCenters => _remoteMediaCenters.Values;   // Collection publiques pour l'affichage des mediacenters dans l'UI
+        public event Action? RemoteMediaCentersChanged; // Action pour envoyer à l'UI quand on a un changement dans la liste des mediacenters
         public MqttService(MediaCenter mediaCenter)
         {
             _mediaCenterInstance = mediaCenter;
@@ -34,7 +35,7 @@ namespace BitRuisseau.Services
         var options = new MqttClientOptionsBuilder()
             .WithTcpServer(BrokerHost, BrokerPort)
             .WithCredentials(BrokerUsername, BrokerPassword)
-            .WithWillPayload(JsonSerializer.Serialize(new Envelope(_mediaCenterInstance.Id, null, MessageType.I_AM_OUT, "")))
+            .WithWillPayload(JsonSerializer.Serialize(new Envelope(_mediaCenterInstance.Id, null, MessageType.I_AM_OUT, "I am out gng")))
             .WithWillQualityOfServiceLevel(MQTTnet.Protocol.MqttQualityOfServiceLevel.ExactlyOnce)
             .WithTimeout(TimeSpan.FromSeconds(10))
             .WithKeepAlivePeriod(TimeSpan.FromSeconds(60))
@@ -45,7 +46,7 @@ namespace BitRuisseau.Services
         _client.ConnectedAsync += e =>
             {
                 // ask all users and announce his own presence to the network
-                Send(new Envelope(_mediaCenterInstance.Id, null, MessageType.WHO_IS_THERE, ""));
+                Send(new Envelope(_mediaCenterInstance.Id, null, MessageType.WHO_IS_THERE, "who is there ?"));
                 return Task.CompletedTask;
             };
 
@@ -105,6 +106,10 @@ namespace BitRuisseau.Services
                     await Send(new Envelope(_mediaCenterInstance.Id, null, MessageType.I_AM_HERE, JsonSerializer.Serialize(_mediaCenterInstance)));
                     break;
                 case MessageType.I_AM_HERE:
+
+                    if (envelope.Id == _mediaCenterInstance.Id)
+                        break;
+
                     MediaCenter? remoteMediaCenter;
 
                     try
@@ -126,12 +131,21 @@ namespace BitRuisseau.Services
                     {
                         break;
                     }
-
-                    _remoteMediaCenters.Add(remoteMediaCenter.Id, remoteMediaCenter);   // Ajout du MediaCenter à la liste
+                    // Ajout du MediaCenter à la liste s'il n'existe pas déjà
+                    if (!_remoteMediaCenters.ContainsKey(remoteMediaCenter.Id))
+                    {
+                        _remoteMediaCenters.Add(remoteMediaCenter.Id, remoteMediaCenter);   // Ajout du MediaCenter à la liste
+                        RemoteMediaCentersChanged?.Invoke(); // Notifie l'UI qu'il y a un changement
+                    }
+                   
                     break;
 
                 case MessageType.I_AM_OUT:
-                    _remoteMediaCenters.Remove(envelope.Id);
+                    if(_remoteMediaCenters.Remove(envelope.Id))
+                    {
+                        RemoteMediaCentersChanged?.Invoke(); // Notifie l'UI qu'il y a un changement
+                    }
+                    
                     break;
             }
         }

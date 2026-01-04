@@ -127,7 +127,7 @@ namespace BitRuisseau
         private void GoToMediatequesPage_Click(object sender, EventArgs e)
         {
             // Création de Form1
-            RemoteMediaCentersForm f1 = new RemoteMediaCentersForm(_remoteMediaCenters);
+            RemoteMediaCentersForm f1 = new RemoteMediaCentersForm(Program.AppMqttService);
             f1.FormClosed += (s, args) => this.Show();
             // Cacher Form2
             this.Hide();
