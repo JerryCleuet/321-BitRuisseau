@@ -41,7 +41,7 @@ namespace BitRuisseau.Services
                 .WithWillPayload(JsonSerializer.Serialize(new Envelope(_mediaCenterInstance.Id, null, MessageType.I_AM_OUT, "Jerry is out")))   // Payload du message de "will"
                 .WithWillQualityOfServiceLevel(MQTTnet.Protocol.MqttQualityOfServiceLevel.ExactlyOnce)  // Qualité de service pour le message de "will"
                 .WithTimeout(TimeSpan.FromSeconds(10))  // Timeout de connexion
-                .WithKeepAlivePeriod(TimeSpan.FromSeconds(60))  // Période de keep-alive pour maintenir la connexion
+                .WithKeepAlivePeriod(TimeSpan.FromSeconds(20))  // Période de keep-alive pour maintenir la connexion
                 .WithCleanStart(true)   // Fais en sorte de ne pas recevoir les messages anciens
                 .Build();   // Construction des options de connexion
 
@@ -49,9 +49,8 @@ namespace BitRuisseau.Services
             _client.ConnectedAsync += e =>
             {
                 // Après connexion, envoyer un message WHO_IS_THERE pour découvrir les autres MediaCenters
-                Send(new Envelope(_mediaCenterInstance.Id, null, MessageType.WHO_IS_THERE, "who is there ?"));
-                Send(new Envelope(_mediaCenterInstance.Id, null, MessageType.I_AM_HERE, "I am here"));
-                return Task.CompletedTask; 
+                Send(new Envelope(_mediaCenterInstance.Id, JsonSerializer.Serialize(_mediaCenterInstance), MessageType.WHO_IS_THERE, "who is there ?"));
+                return Task.CompletedTask;
             };
 
             _client.ApplicationMessageReceivedAsync += e =>
