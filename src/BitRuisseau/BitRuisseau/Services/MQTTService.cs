@@ -1,10 +1,11 @@
-﻿using BitRuisseau.Protocol;
+﻿using Backend.Protocol;
 using BitRuisseau.Models;
+using BitRuisseau.Protocol;
 using MQTTnet;
 using System.Buffers;
+using System.Linq;
 using System.Text;
 using System.Text.Json;
-using Backend.Protocol;
 
 namespace BitRuisseau.Services
 {
@@ -12,7 +13,7 @@ namespace BitRuisseau.Services
     {
         private IMqttClient _client;    // Client MQTT
         private MediaCenter _mediaCenterInstance;   // Instance locale du MediaCenter
-        private const string Topic = "test";   // Topic MQTT utilisé pour communiquer avec les autres
+        private const string Topic = "powercher/bitruisseau";   // Topic MQTT utilisé pour communiquer avec les autres
         private Dictionary<string, MediaCenter> _remoteMediaCenters = new Dictionary<string, MediaCenter>();    // Dictionnaire pour stocker les MediaCenters
         public IReadOnlyCollection<MediaCenter> RemoteMediaCenters => _remoteMediaCenters.Values;   // Collection publiques pour l'affichage des mediacenters dans l'UI
         public event Action? RemoteMediaCentersChanged; // Action pour envoyer à l'UI quand on a un changement dans la liste des mediacenters
@@ -34,22 +35,23 @@ namespace BitRuisseau.Services
 
 
 
-        var options = new MqttClientOptionsBuilder()
-            .WithTcpServer(BrokerHost, BrokerPort)  // Adresse du broker MQTT
-            .WithCredentials(BrokerUsername, BrokerPassword)    // Authentification auprès du broker MQTT
-            .WithWillPayload(JsonSerializer.Serialize(new Envelope(_mediaCenterInstance.Id, null, MessageType.I_AM_OUT, "I am out gng")))   // Payload du message de "will"
-            .WithWillQualityOfServiceLevel(MQTTnet.Protocol.MqttQualityOfServiceLevel.ExactlyOnce)  // Qualité de service pour le message de "will"
-            .WithTimeout(TimeSpan.FromSeconds(10))  // Timeout de connexion
-            .WithKeepAlivePeriod(TimeSpan.FromSeconds(60))  // Période de keep-alive pour maintenir la connexion
-            .WithCleanStart(true)   // Fais en sorte de ne pas recevoir les messages anciens
-            .Build();   // Construction des options de connexion
+            var options = new MqttClientOptionsBuilder()
+                .WithTcpServer(BrokerHost, BrokerPort)  // Adresse du broker MQTT
+                .WithCredentials(BrokerUsername, BrokerPassword)    // Authentification auprès du broker MQTT
+                .WithWillPayload(JsonSerializer.Serialize(new Envelope(_mediaCenterInstance.Id, null, MessageType.I_AM_OUT, "Jerry is out")))   // Payload du message de "will"
+                .WithWillQualityOfServiceLevel(MQTTnet.Protocol.MqttQualityOfServiceLevel.ExactlyOnce)  // Qualité de service pour le message de "will"
+                .WithTimeout(TimeSpan.FromSeconds(10))  // Timeout de connexion
+                .WithKeepAlivePeriod(TimeSpan.FromSeconds(60))  // Période de keep-alive pour maintenir la connexion
+                .WithCleanStart(true)   // Fais en sorte de ne pas recevoir les messages anciens
+                .Build();   // Construction des options de connexion
 
             // Gestion des événements MQTT
             _client.ConnectedAsync += e =>
             {
                 // Après connexion, envoyer un message WHO_IS_THERE pour découvrir les autres MediaCenters
                 Send(new Envelope(_mediaCenterInstance.Id, null, MessageType.WHO_IS_THERE, "who is there ?"));
-                return Task.CompletedTask;
+                Send(new Envelope(_mediaCenterInstance.Id, null, MessageType.I_AM_HERE, "I am here"));
+                return Task.CompletedTask; 
             };
 
             _client.ApplicationMessageReceivedAsync += e =>
@@ -108,8 +110,7 @@ namespace BitRuisseau.Services
                 case MessageType.WHO_IS_THERE:  // Quand on reçoit un WHO_IS_THERE, on répond avec I_AM_HERE
                     await Send(new Envelope(_mediaCenterInstance.Id, null, MessageType.I_AM_HERE, JsonSerializer.Serialize(_mediaCenterInstance)));
                     break;
-                case MessageType.I_AM_HERE: // Quand on reçoit un I_AM_HERE, on ajoute le MediaCenter à la liste s'il n'existe pas déjà
-
+                case MessageType.I_AM_HERE: // Quand on reçoit un I_AM_HERE, on ajoute le MediaCenter à la liste s'il n'existe pas 
                     if (envelope.Id == _mediaCenterInstance.Id)
                         break;
 
@@ -140,15 +141,11 @@ namespace BitRuisseau.Services
                         _remoteMediaCenters.Add(remoteMediaCenter.Id, remoteMediaCenter);   // Ajout du MediaCenter à la liste
                         RemoteMediaCentersChanged?.Invoke(); // Notifie l'UI qu'il y a un changement
                     }
-                   
                     break;
 
                 case MessageType.I_AM_OUT:  // Quand on reçoit un I_AM_OUT, on retire le MediaCenter de la liste
-                    if (_remoteMediaCenters.Remove(envelope.Id))
-                    {
-                        RemoteMediaCentersChanged?.Invoke(); // Notifie l'UI qu'il y a un changement
-                    }
-                    
+                    _remoteMediaCenters.Remove(envelope.SenderId);
+                    RemoteMediaCentersChanged?.Invoke(); // Notifie l'UI qu'il y a un changement
                     break;
             }
         }

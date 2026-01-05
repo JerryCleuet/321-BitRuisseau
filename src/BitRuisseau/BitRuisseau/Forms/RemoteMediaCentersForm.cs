@@ -14,6 +14,7 @@ namespace BitRuisseau
         {
             InitializeComponent(); 
             _mqttService = mqttService; // Initialise le service MQTT
+
             // S'abonne à l'événement RemoteMediaCentersChanged pour mettre à jour l'interface utilisateur lorsque la liste des MediaCenters distants change
             _mqttService.RemoteMediaCentersChanged += () =>
             {
@@ -25,6 +26,7 @@ namespace BitRuisseau
             };
             UpdateMediaCentersList();   // Met à jour la liste des MediaCenters distants au démarrage
         }
+
         // Met à jour la liste des MediaCenters distants dans l'interface utilisateur
         private void UpdateMediaCentersList()
         {
@@ -40,7 +42,7 @@ namespace BitRuisseau
             base.OnFormClosing(e);  // Appelle la méthode de la classe de base
 
             // Envoie I_AM_OUT pour signaler aux autres que cette médiathèque se déconnecte
-            _mqttService.Send(new Envelope(Program.AppMediaCenter.Id, null, MessageType.I_AM_OUT, "")).Wait();  // Le .wait() est utilisé ici pour s'assurer que le message est envoyé avant la fermeture complète
+            _mqttService.Send(new Envelope(Program.AppMediaCenter.Id, null, MessageType.I_AM_OUT, "Jerry is out")).Wait();  // Le .wait() est utilisé ici pour s'assurer que le message est envoyé avant la fermeture complète
         }
 
         private void label1_Click(object sender, EventArgs e)

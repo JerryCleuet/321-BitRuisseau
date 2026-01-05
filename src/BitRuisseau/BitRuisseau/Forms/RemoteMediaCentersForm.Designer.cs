@@ -50,7 +50,7 @@
             goToMediaPage.Name = "goToMediaPage";
             goToMediaPage.Size = new Size(109, 36);
             goToMediaPage.TabIndex = 1;
-            goToMediaPage.Text = "button1";
+            goToMediaPage.Text = "Page de médias";
             goToMediaPage.UseVisualStyleBackColor = true;
             goToMediaPage.Click += goToMediaPage_Click;
             // 
@@ -60,7 +60,7 @@
             listBoxRemote.ItemHeight = 15;
             listBoxRemote.Location = new Point(40, 92);
             listBoxRemote.Name = "listBoxRemote";
-            listBoxRemote.Size = new Size(335, 454);
+            listBoxRemote.Size = new Size(335, 544);
             listBoxRemote.TabIndex = 2;
             // 
             // RemoteMediaCentersForm
