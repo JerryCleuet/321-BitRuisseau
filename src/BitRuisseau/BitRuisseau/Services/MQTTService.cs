@@ -30,12 +30,12 @@ namespace BitRuisseau.Services
         // Méthode pour démarrer le service MQTT
         public async Task StartAsync()
         {
-            var factory = new MqttClientFactory();
+            MqttClientFactory factory = new MqttClientFactory();
             _client = factory.CreateMqttClient();
 
 
 
-            var options = new MqttClientOptionsBuilder()
+            MqttClientOptions options = new MqttClientOptionsBuilder()
                 .WithTcpServer(BrokerHost, BrokerPort)  // Adresse du broker MQTT
                 .WithCredentials(BrokerUsername, BrokerPassword)    // Authentification auprès du broker MQTT
                 .WithWillPayload(JsonSerializer.Serialize(new Envelope(_mediaCenterInstance.Id, null, MessageType.I_AM_OUT, "Jerry is out")))   // Payload du message de "will"
@@ -94,7 +94,7 @@ namespace BitRuisseau.Services
         // Méthode pour envoyer un message MQTT
         public async Task Send(Envelope envelope)
         {
-            var message = new MqttApplicationMessageBuilder()
+            MqttApplicationMessage message = new MqttApplicationMessageBuilder()
                 .WithTopic(Topic)
                 .WithPayload(JsonSerializer.Serialize(envelope))
                 .Build();
