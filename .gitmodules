@@ -1,4 +1,0 @@
-[submodule "doc/jdt"]
-	path = doc/jdt
-	url = https://github.com/ETML-INF/gitjournal.git
-	branch = node

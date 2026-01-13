@@ -16,54 +16,22 @@ using BitRuisseau.Services;
 
 namespace BitRuisseau
 {
-    public partial class Form2 : Form
+    public partial class MediaLibraryForm : Form
     {
-        MediaCenter _mediaCenter = new MediaCenter() { Name = "Jerry" };
-        MqttService _mqttService;
-
-        public Form2()
+        public MediaLibraryForm()
         {
             InitializeComponent();
             mediaPageTitle.Text = "Liste des pistes audio disponibles";
             GoToMediatequesPage.Text = "Liste des médiathèques";
             IntroText.Text = $"Voici la liste des médias disponibles dans le dossier choisi";
 
-            _mqttService = new MqttService(_mediaCenter);
-
-
-            StartMqtt();
             ShowMusicList();
         }
 
-        public async Task StartMqtt()
-        {
-            try
-            {
-                await _mqttService.StartAsync();
-            }
-            catch (Exception ex)
-            {
-                // do not crash the UI if MQTT fails to start
-                MessageBox.Show($"Impossible de démarrer le service MQTT : {ex.Message}", "Erreur MQTT", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
-        }
 
         public void ShowMusicList()
         {
             MediaLibrary _library = new MediaLibrary();
-            // Définition d'un dossier de médias par défaut
-            string defaultPath = Path.GetFullPath(
-                Path.Combine(
-                    AppDomain.CurrentDomain.BaseDirectory,
-                    @"..\..\..\..\..\..\medias\Test"
-                     )
-            );
-
-            // Chargement automatique au démarrage du dossier par défaut
-            if (Directory.Exists(defaultPath))
-            {
-                LoadAndDisplay(defaultPath, _library);
-            }
 
             // Si on clique sur le bouton, on peut choisir le dossier de médias
             button1.Click += (sender, e) =>
@@ -83,6 +51,7 @@ namespace BitRuisseau
                 }
             };
         }
+        // Méthode pour charger et afficher les médias
         private void LoadAndDisplay(string path, MediaLibrary _library)
         {
             _library.LoadFiles(path);
@@ -96,7 +65,7 @@ namespace BitRuisseau
 
             int mediaBtnIndex = 0;
 
-            foreach (var file in _library.Medias)
+            foreach (Media file in _library.Medias)
             {
                 // Syntaxe des musiques
                 string displayName =
@@ -140,13 +109,13 @@ namespace BitRuisseau
 
                 startMusicBtn.Click += (s, args) =>
                 {
-                    axWindowsMediaPlayer1.URL = file.Filepath;
-                    axWindowsMediaPlayer1.Ctlcontrols.play();
+                    axWindowsMediaPlayer1.URL = file.Filepath;  // Définit le chemin du fichier à lire
+                    axWindowsMediaPlayer1.Ctlcontrols.play();   // Démarre la lecture
                 };
 
-                this.Controls.Add(startMusicBtn);
+                this.Controls.Add(startMusicBtn);   // Ajoute le bouton de lecture au formulaire
 
-                mediaBtnIndex++;
+                mediaBtnIndex++;    // Incrémente l'index des boutons médias
             }
         }
         private void label1_Click(object sender, EventArgs e)
@@ -156,13 +125,10 @@ namespace BitRuisseau
 
         private void GoToMediatequesPage_Click(object sender, EventArgs e)
         {
-            // Création de Form1
-            var f1 = new Form1();
-            f1.FormClosed += (s, args) => this.Show();
-            // Cacher Form2
-            this.Hide();
-            // Montrer Form1
-            f1.Show();
+            RemoteMediaCentersForm f1 = new RemoteMediaCentersForm(Program.AppMqttService); // Crée une nouvelle instance du formulaire RemoteMediaCentersForm
+            f1.FormClosed += (s, args) => this.Show();  // Ajoute un gestionnaire d'événements pour afficher à nouveau ce formulaire lorsque f1 est fermé
+            this.Hide();    // Cache le formulaire actuel
+            f1.Show();  // Affiche le formulaire RemoteMediaCentersForm
         }
 
         private void IntroText_Click(object sender, EventArgs e)

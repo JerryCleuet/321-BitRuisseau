@@ -1,4 +1,6 @@
-﻿namespace BitRuisseau.Protocol
+﻿using System.Text.Json;
+
+namespace BitRuisseau.Protocol
 {
     /// <summary>
     /// Un objet de ce type décrit un média audio,
@@ -11,7 +13,7 @@
         /// il n'est utilisé que durant le transfert entre deux noeuds
         /// </summary>
         public string Id { get; init; } = Guid.NewGuid().ToString();
-        
+
         public string Title { get; set; }
 
         public string Artist { get; set; }
@@ -27,15 +29,28 @@
         public long Size { get; set; }
 
         public TimeSpan Duration { get; set; }
-        
+
         /// <summary>
         /// optionnel : genre musical (techno, hip-hop, rock, ...)
         /// </summary>
         public string? Category { get; set; }
-        
+
         /// <summary>
         /// optionnel
         /// </summary>
         public string? Featuring { get; set; }
+        public override string ToString() => this.ToJson();
+        public string ToJson() => JsonSerializer.Serialize(this);
+        public static MediaDescription? FromJson(string json)
+        {
+            try
+            {
+                return System.Text.Json.JsonSerializer.Deserialize<MediaDescription>(json);
+            }
+            catch
+            {
+                return null;
+            }
+        }
     }
 }

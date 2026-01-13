@@ -1,4 +1,6 @@
-﻿namespace BitRuisseau.Protocol
+﻿using System.Text.Json;
+
+namespace BitRuisseau.Protocol
 {
     /// <summary>
     /// Un objet de ce type contient une partie d'un média
@@ -9,19 +11,19 @@
         /// le média auquel ce fragment appartient
         /// </summary>
         public string MediaId { get; set; }
-        
+
         /// <summary>
         /// la position dans le fichier où ce fragment doit commencer
         /// si la valeur est -1, cela signifie que c'est le début du fichier
         /// </summary>
         public int StartIndex { get; set; }
-        
+
         /// <summary>
         /// la position dans le fichier ou se trouve le dernier byte de ce fragment
         /// si la valeur est -1, cela signifie que c'est la fin du fichier
         /// </summary>
         public int EndIndex { get; set; }
-        
+
         /// <summary>
         /// le contenu.
         /// il s'agit de binaire encodé en base64
@@ -33,5 +35,18 @@
         /// </summary>
         public string? Content { get; set; }
 
+        public override string ToString() => this.ToJson();
+        public string ToJson() => JsonSerializer.Serialize(this);
+        public static Fragment? FromJson(string json)
+        {
+            try
+            {
+                return System.Text.Json.JsonSerializer.Deserialize<Fragment>(json);
+            }
+            catch
+            {
+                return null;
+            }
+        }
     }
 }

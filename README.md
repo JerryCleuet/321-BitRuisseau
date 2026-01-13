@@ -1,47 +1,52 @@
-# 321-BitRuisseau
-Auteur : Jerry Cleuet
+# Projet 321-BitRuisseau
 
-## Introduction
-Ce projet vise à créer une médiathèque audio/vidéo partagée avec un protocole P2P.
+## Description
 
-## Analyse fonctionnelle
+Ce projet a pour objectif de mettre en place une **communication en temps réel via le protocole MQTT**.  
+Il permet à plusieurs utilisateurs de :
 
-### Maquettes
-Les maquettes suivantes ont été réalisées avec l'outil Figma
-## La liste des maquettes
-![alt text](maquettes/Liste-mediatheques.png)
-## La liste des médias disponibles
-![alt text](maquettes/Liste-medias.png)
-## Ajouter un média à une médiathèque
-![alt text](maquettes/Ajouter-media.png)
-## Confirmer la suppresion d'un élément
-![alt text](maquettes/Confirm-suppression.png)
-## Modifier la description d'un média
-![alt text](maquettes/Modif-media.png)
-### User stories
-User story 1
+- **Envoyer des messages** sur un **topic MQTT précis**
+- **Recevoir les messages** publiés par les autres utilisateurs
+- **Afficher les messages** dans une liste
+- **Afficher l’émetteur du message**
 
-    En tant qu'utilisateur,
-    Je veux pouvoir définir un dossier dans lequel mes fichiers audio sont enregistrés,
-    Pour mieux organiser ma médiathèque.
+Le projet est développé avec **Visual Studio 2022** et versionné sur **GitHub**.
 
-User story 2
+---
 
-    En tant qu'utilisateur,
-    Je veux voir dans le MediaPlayer la liste de tous mes fichiers audio (liste personnelle). Chaque fichier est présenté avec les attributs suivants :
-    - Titre*
-    - Artiste*
-    - Année*
-    - Durée*
-    - Featuring
+## Fonctionnalités
 
-User story 3
+- Connexion à un **broker MQTT** (Celui fournit par l'ETML)
+- Publication de messages sur un **topic commun** (Dans ce cas, **powercher/bitruisseau**)
+- Abonnement à ce topic pour recevoir les messages
+- Affichage en temps réel :
+  - du nom des expéditeurs dans une liste
+- Interface simple et lisible
+- MediaPlayer fonctionnel permettant de choisir son dossier de fichiers audio
 
-    En tant qu'utilisateur, 
-    Je veux pouvoir écouter un média de ma liste personnelle.
+---
 
-User story 4
+## Technologies utilisées
 
-    En tant qu'utilisateur,
-    Je veux pouvoir ajouter, supprimer et supprimer la description d'un média de ma liste personnelle
-    Pour qu'elle soit plus adaptée à mes besoins.
+- **Langage** : C#
+- **IDE** : Visual Studio 2022
+- **Protocole** : MQTT
+- **Broker MQTT** : (ex. Mosquitto, HiveMQ, etc.)
+- **Versioning** : Git / GitHub
+
+---
+
+## Installation et configuration
+
+### 1. Prérequis
+
+- Visual Studio 2022
+- Un broker MQTT fonctionnel
+
+---
+
+### 2️. Cloner le projet
+
+```bash
+git clone https://github.com/JerryCleuet/321-BitRuisseau
+```
