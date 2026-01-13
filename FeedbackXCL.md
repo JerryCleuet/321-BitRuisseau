@@ -35,3 +35,11 @@
   - Votre projet Github semble être à l'abandon. Selon lui, vous n'avez encore rien accompli, ce qui n'est pas vrai.
   - Bugs à corriger, qualité à améliorer
   - Faire une release finale impeccable
+
+## Finale
+
+- Jokers: OK-3
+- Document usage IA: Très bien !
+- Livraison:
+  - notification OK
+  - contenu KO: Votre journal de travail fait 36 pages, dont 33 sont vides. Vous n'avez pas vérifié ce que vous livrez. Ce n'est pas acceptable.
